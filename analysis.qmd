@@ -11,26 +11,20 @@ execute:
 library(tidyverse)
 library(readxl)
 ```
-```{r}
-library(readxl)
-```
 
 ```{r}
 #| label: nba_recruits_summary
-# Read NBA recruits, select columns, and show summary
+# Read NBA recruits, keep useful columns, and show summary
 nba_recruits <- read_excel("data/nba_recruits.xlsx") %>%
-  select(rank, nba_mean_ws48, top_mean_wa, total_seasons, drafted)
- 
-```{r}
-summary(nba_recruits)
-```
+  select(name, rank, recruit_group, tier, nba_mean_ws48, top_mean_wa, total_seasons, drafted)
+
 summary(nba_recruits)
 ```
 
 ```{r}
 #| label: tier_counts
-# Read full recruits file and count players by tier
-tier_counts <- read_excel("data/nba_recruits.xlsx") %>%
+# Count players by career tier
+tier_counts <- nba_recruits %>%
   count(tier, name = "n") %>%
   arrange(desc(n))
 
