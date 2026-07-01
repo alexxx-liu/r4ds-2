@@ -20,7 +20,10 @@ library(readxl)
 # Read NBA recruits, select columns, and show summary
 nba_recruits <- read_excel("data/nba_recruits.xlsx") %>%
   select(rank, nba_mean_ws48, top_mean_wa, total_seasons, drafted)
-
+ 
+```{r}
+summary(nba_recruits)
+```
 summary(nba_recruits)
 ```
 
@@ -36,12 +39,63 @@ print(tier_counts)
 
 ```{r}
 #| label: nba_data_transform
+#| cache: true
 # Read recruits and convert `tier` to an ordered factor
-nba_data <- read_excel("data/nba_recruits.xlsx") %>%
+basketball_raw <- read_excel("data/nba_recruits.xlsx")
+
+basketball_tibble <- basketball_raw %>%
   mutate(tier = factor(tier,
     levels = c("Never played", "Brief career", "Solid career", "All-Star level", "Superstar"),
     ordered = TRUE
-  ))
+  )) %>%
+  {
+    if ("recruit_group" %in% names(.)) {
+      mutate(., recruit_group = factor(recruit_group,
+        levels = c("#1–10", "#11–25", "#26–50", "#51–100", "Outside top 100"),
+        ordered = TRUE
+      ))
+    } else {
+      mutate(., recruit_group = factor(NA_character_,
+        levels = c("#1–10", "#11–25", "#26–50", "#51–100", "Outside top 100"),
+        ordered = TRUE
+      ))
+    }
+  }
 
-glimpse(nba_data)
+glimpse(basketball_tibble)
+```
+
+```{r}
+#| label: tier_by_recruit_plot
+#| fig.width: 7
+#| fig.height: 5
+#| echo: false
+# Scatter: recruit `rank` vs `top_mean_wa`, colored by `tier`, with linear trend and labels
+plot_scatter <- basketball_tibble %>%
+  filter(!is.na(rank), !is.na(top_mean_wa)) %>%
+  mutate(rank = as.numeric(rank))
+
+# pick notable players to label (top 4 by `top_mean_wa`)
+label_data <- plot_scatter %>%
+  arrange(desc(top_mean_wa)) %>%
+  slice_head(n = 4)
+
+p <- ggplot(plot_scatter, aes(x = rank, y = top_mean_wa, color = tier)) +
+  geom_point(alpha = 0.8, size = 2) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  scale_x_continuous(trans = 'reverse') +
+  labs(x = "Recruit rank", y = "Top mean win/48 (top_mean_wa)",
+       title = "Recruit rank vs. Top mean WS/48, colored by career tier") +
+  theme_minimal()
+
+if (requireNamespace("ggrepel", quietly = TRUE)) {
+  library(ggrepel)
+  p <- p + geom_text_repel(data = label_data, aes(label = name),
+                           size = 3, show.legend = FALSE)
+} else {
+  p <- p + geom_text(data = label_data, aes(label = name),
+                     hjust = -0.1, size = 3, show.legend = FALSE)
+}
+
+print(p)
 ```
