@@ -1,4 +1,3 @@
-# Ignore generated analysis files
-analysis.html
-analysis.qmd
 analysis_files/
+analysis_cache
+

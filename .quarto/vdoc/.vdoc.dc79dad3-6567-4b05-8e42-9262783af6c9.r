@@ -1,30 +1,30 @@
----
-title: "Analyzing US Births and Basketball Recruits"
-author: "Alex Liu"
-format: html
-execute:
-  echo: false
----
-
-```{r}
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #| message: false
 library(tidyverse)
 library(readxl)
 ```
-```{r}
+#
 library(readxl)
-```
-
-```{r}
+#
+#
+#
 #| label: nba_recruits_summary
 # Read NBA recruits, select columns, and show summary
 nba_recruits <- read_excel("data/nba_recruits.xlsx") %>%
   select(rank, nba_mean_ws48, top_mean_wa, total_seasons, drafted)
 
 summary(nba_recruits)
-```
-
-```{r}
+#
+#
+#
 #| label: tier_counts
 # Read full recruits file and count players by tier
 tier_counts <- read_excel("data/nba_recruits.xlsx") %>%
@@ -32,16 +32,7 @@ tier_counts <- read_excel("data/nba_recruits.xlsx") %>%
   arrange(desc(n))
 
 print(tier_counts)
-```
-
-```{r}
-#| label: nba_data_transform
-# Read recruits and convert `tier` to an ordered factor
-nba_data <- read_excel("data/nba_recruits.xlsx") %>%
-  mutate(tier = factor(tier,
-    levels = c("Never played", "Brief career", "Solid career", "All-Star level", "Superstar"),
-    ordered = TRUE
-  ))
-
-glimpse(nba_data)
-```
+#
+#
+#
+#

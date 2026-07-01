@@ -1,0 +1,22 @@
+---
+title: "Analyzing US Births and Basketball Recruits"
+author: "Alex Liu"
+format: html
+execute:
+  echo: false
+---
+
+```{r}
+#| message: false
+library(tidyverse)
+library(readxl)
+```
+```{r}
+library(readxl)
+
+nba_recruits <- read_excel("data/nba_recruits.xlsx")
+nba_recruits <- read_excel("data/nba_recruits.xlsx") %>%
+  select(rank, nba_mean_ws48, top_mean_wa, total_seasons, drafted)
+
+summary(nba_recruits)
+```
